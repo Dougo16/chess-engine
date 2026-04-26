@@ -18,7 +18,7 @@ U64 get_pieces(U64 * board, int colour, int piece);
 void print_bitboard(U64 bitboard);
 
 int main() {
-    U64 board = 0ULL;
+    U64 board = 3934859929;
 
     print_bitboard(board);
     
@@ -35,15 +35,17 @@ void print_bitboard(U64 bitboard) {
     printf("\n");
     
     for (int r = 7; r >=0; r--) {
-        for (int f = 7; f >= 0; f--) {
-            unsigned int bit = (bitboard >> r + 8*f) & 1ULL;
+        for (int f = 0; f < 8; f++) {
+            unsigned int bit = (bitboard >> (8*r + f)) & 1ULL;
             
             if (bit == 1) {
-                printf("1");
+                printf("1 ");
             }
             else {
-                printf(".");
+                printf(". ");
             }
         }
+        
+        printf("\n");
     }
 }
