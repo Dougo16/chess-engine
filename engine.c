@@ -13,11 +13,11 @@
 #define PAWN 7
 
 #define NOT_A_FILE 0xfefefefefefefefeULL
-#define NOT_H_FILE 0x7f7f7f7f7f7f7f7fULL
 #define NOT_B_FILE 0xfdfdfdfdfdfdfdfdULL
 #define NOT_G_FILE 0xbfbfbfbfbfbfbfbfULL
+#define NOT_H_FILE 0x7f7f7f7f7f7f7f7fULL
 
-#define U64 uint64_t // Bitboard
+#define BitBoard uint64_t // Bitboard
 
 // Move components
 #define MOVE_FROM(m) ((m) & 0x3F)
@@ -33,21 +33,25 @@
 #define FLAG_CASTLE_Q     0x4
 #define FLAG_PROMO        0x8
 
+BitBoard precomp_moves[2][64];
+
 // ====================|
 // FUNCTION PROTOTYPES |
 // ====================|
 
 
-void print_bitboard (U64 bitboard);
+void print_bitboard (BitBoard bitboard);
 
 void generate_moves (const Board *b, MoveList *ml);
+
+void init_generate_moves (move_table);
 
 // ===========|
 // STRUCTURES |
 // ===========|
 
 typedef struct {
-    U64 pieces[8];
+    BitBoard pieces[8];
     int side_to_move;
     int castling_rights;
     int en_passant_sq;
@@ -73,10 +77,86 @@ int main() {
 // BOARD REPRESENTATION |
 // =====================|
 
+// Generate moves for easily precomputable pieces (knight and king)
+void init_generate_moves (BitBoard **move_table) {
+    BitBoard moves;
 
+    // King moves
+    for (int index = 0; index < 63; index++) {
+        moves = 0ULL;
 
+        moves = gen_king_moves(index);
+
+        move_table[0][index] = moves;
+    }
+
+    // Knight moves
+    for (int index = 0; index < 63; index++) {
+        moves = 0ULL;
+
+        moves = gen_knight_moves(index);
+
+        move_table[0][index] = moves;
+    }
+}
 
 void generate_moves (const Board *b, MoveList *ml) {
+
+}
+
+
+// ================|
+// MOVE GENERATORS |
+// ================|
+
+BitBoard gen_king_moves (int index) {
+    BitBoard moves = 0ULL;
+    
+    BitBoard bb = index_to_bb(index);
+
+    moves |= bb << 8; // N
+    moves |= bb >> 8; // S
+    moves |= bb >> 1; // W
+    moves |= bb << 1; // E
+    moves |= bb << 7; // NW
+    moves |= bb << 9; // NE
+    moves |= bb >> 9; // SW
+    moves |= bb >> 7; // SE
+
+    if (index % 8 == 7) {
+        moves &= NOT_A_FILE;
+    }
+    else if (index % 8 == 0) {
+        moves &= NOT_H_FILE;
+    }
+
+    return moves;
+
+}
+
+BitBoard gen_knight_moves (int index) {
+    BitBoard moves = 0ULL;
+    
+    BitBoard bb = index_to_bb(index);
+
+    moves |= bb << 17; // NE high
+    moves |= bb >> 17; // SW low
+    moves |= bb >> 15; // NW high
+    moves |= bb << 15; // SE low
+    moves |= bb << 6; // NW left
+    moves |= bb << 10; // NE right
+    moves |= bb >> 6; // SE right
+    moves |= bb >> 10; // SW left
+
+    // Mask out wraparound
+    if (index % 8 >= 6) {
+        moves &= (NOT_A_FILE & NOT_B_FILE);
+    }
+    else if (index % 8 <= 1) {
+        moves &= (NOT_H_FILE & NOT_G_FILE);
+    }
+
+    return moves;
 
 }
 
@@ -88,7 +168,7 @@ void generate_moves (const Board *b, MoveList *ml) {
 // =================|
 
 
-void print_bitboard (U64 bitboard) {
+void print_bitboard (BitBoard bitboard) {
     printf("\n");
     
     for (int rank = 7; rank >=0; rank--) {
@@ -131,4 +211,8 @@ void extract_moves (int from_index, int targets, int flags, MoveList movelist) {
 
 Move encode_move (int from_index, int to_index, int flags) {
     return (flags << 12) & (to_index << 6) & from_index;
+}
+
+BitBoard index_to_bb (int index) {
+    return 1ULL << index;
 }
