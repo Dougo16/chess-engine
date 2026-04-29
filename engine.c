@@ -5,6 +5,7 @@
 
 #define WHITE 0
 #define BLACK 1
+
 #define KING 2
 #define QUEEN 3
 #define ROOK 4
@@ -160,6 +161,285 @@ BitBoard gen_knight_moves (int index) {
 
 }
 
+BitBoard gen_rook_moves (int index, Board board) {
+    int us = index_to_bb(index) & board.pieces[1];
+    int them = !us;
+
+    BitBoard moves = index_to_bb(index);
+
+    // North
+    BitBoard ray = index_to_bb(index);
+    while (ray << 8 != 0) {
+        ray <<= 8;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+
+    // South
+    BitBoard ray = index_to_bb(index);
+    while (ray >> 8 != 0) {
+        ray >>= 8;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+
+    // East
+    BitBoard ray = index_to_bb(index);
+    while (ray & NOT_A_FILE != 0) {
+        ray <<= 1;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+
+    // West
+    BitBoard ray = index_to_bb(index);
+    while (ray & NOT_H_FILE != 0) {
+        ray >>= 1;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+
+    return moves;
+}
+
+BitBoard gen_bishop_moves (int index, Board board) {
+    int us = index_to_bb(index) & board.pieces[1];
+    int them = !us;
+
+    BitBoard moves = index_to_bb(index);
+
+    // NE
+    BitBoard ray = index_to_bb(index);
+    while (ray << 9 != 0 && ray & NOT_H_FILE != 0) {
+        ray <<= 9;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+
+    // NW
+    BitBoard ray = index_to_bb(index);
+    while (ray << 7 != 0 && ray & NOT_A_FILE != 0) {
+        ray <<= 7;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+
+    // SE
+    BitBoard ray = index_to_bb(index);
+    while (ray >> 7 != 0 && ray & NOT_H_FILE != 0) {
+        ray >>= 7;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+
+    // SW
+    BitBoard ray = index_to_bb(index);
+    while (ray >> 9 != 0 && ray & NOT_A_FILE != 0) {
+        ray >>= 9;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+}
+
+BitBoard gen_queen_moves (int index, Board board) {
+    int us = index_to_bb(index) & board.pieces[1];
+    int them = !us;
+
+    BitBoard moves = index_to_bb(index);
+
+    // North
+    BitBoard ray = index_to_bb(index);
+    while (ray << 8 != 0) {
+        ray <<= 8;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+
+    // South
+    BitBoard ray = index_to_bb(index);
+    while (ray >> 8 != 0) {
+        ray >>= 8;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+
+    // East
+    BitBoard ray = index_to_bb(index);
+    while (ray & NOT_A_FILE != 0) {
+        ray <<= 1;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+
+    // West
+    BitBoard ray = index_to_bb(index);
+    while (ray & NOT_H_FILE != 0) {
+        ray >>= 1;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+
+    // NE
+    BitBoard ray = index_to_bb(index);
+    while (ray << 9 != 0 && ray & NOT_H_FILE != 0) {
+        ray <<= 9;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+
+    // NW
+    BitBoard ray = index_to_bb(index);
+    while (ray << 7 != 0 && ray & NOT_A_FILE != 0) {
+        ray <<= 7;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+
+    // SE
+    BitBoard ray = index_to_bb(index);
+    while (ray >> 7 != 0 && ray & NOT_H_FILE != 0) {
+        ray >>= 7;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+
+    // SW
+    BitBoard ray = index_to_bb(index);
+    while (ray >> 9 != 0 && ray & NOT_A_FILE != 0) {
+        ray >>= 9;
+        
+        if (ray & board.pieces[us]) {
+            break;
+        }
+
+        moves |= ray;
+
+        if (ray & board.pieces[them]) {
+            break;
+        }
+    }
+}
+
 
 
 
@@ -215,4 +495,16 @@ Move encode_move (int from_index, int to_index, int flags) {
 
 BitBoard index_to_bb (int index) {
     return 1ULL << index;
+}
+
+// ===============|
+// TEST FUNCTIONS |
+// ===============|
+
+void test_gen_knight_moves () {
+
+}
+
+void test_gen_king_moves () {
+
 }
